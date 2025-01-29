@@ -1,0 +1,31 @@
+name: Deploy README to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install Dependencies
+      run: npm install -g action-gh-pages
+
+    - name: Build and Deploy
+      run: |
+        echo "Creating index.html from README.md..."
+        cp README.md index.md
+        npx @appnest/readme-to-html -i index.md -o index.html
+        echo "Deploying to GitHub Pages..."
+        gh-pages -d . -b gh-pages
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
